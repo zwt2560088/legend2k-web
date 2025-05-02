@@ -21,7 +21,7 @@ public class DataSeeder {
             if (productRepository.count() == 0) {
                 // 创建示例产品
                 Product product1 = new Product();
-                product1.setTitle("DLC 4");
+                product1.setName("DLC 4");
                 product1.setImage("https://nocode.meituan.com/photo/search?keyword=game,dlc&width=400&height=300");
                 product1.setDescription("游戏DLC内容");
                 product1.setPrice(new BigDecimal("0.001"));
@@ -51,7 +51,7 @@ public class DataSeeder {
 
                 // product2 部分保持不变
                 Product product2 = new Product();
-                product2.setTitle("40 LEVEL");
+                product2.setName("40 LEVEL");
                 product2.setImage("https://nocode.meituan.com/photo/search?keyword=game,level&width=400&height=300");
                 product2.setDescription("等级提升服务");
                 product2.setPrice(new BigDecimal("0.002"));

@@ -1,5 +1,6 @@
 package com.zwt.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,6 +27,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "product_id") // 订单直接关联一个商品
+    @JsonBackReference("defaultReference") // 添加此注解
     private Product product;
 
     // 评价信息

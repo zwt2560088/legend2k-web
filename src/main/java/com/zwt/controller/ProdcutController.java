@@ -50,4 +50,44 @@ public class ProdcutController {
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        log.info("Adding product: {}", product);
+        try {
+            Product savedProduct = productRepository.save(product);
+            log.info("Product added successfully with ID: {}", savedProduct.getId());
+            return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error adding product", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
+        log.info("Updating product with ID: {}", id);
+        try {
+            Optional<Product> productOptional = productRepository.findById(id);
+            if (!productOptional.isPresent()) {
+                log.warn("Product with ID {} not found", id);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            Product product = productOptional.get();
+            product.setName(productDetails.getName());
+            product.setDescription(productDetails.getDescription());
+            product.setPrice(productDetails.getPrice());
+            product.setImage(productDetails.getImage());
+            product.setStatus(productDetails.getStatus());
+            product.setSales(productDetails.getSales());
+
+            Product updatedProduct = productRepository.save(product);
+            log.info("Product with ID {} updated successfully", id);
+            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error updating product with ID: {}", id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
