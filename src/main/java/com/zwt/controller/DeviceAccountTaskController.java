@@ -1,16 +1,17 @@
 package com.zwt.controller;
 
-import com.smart.disguiser.agent.disguiser.agent.aop.MethodLog;
-import com.smart.disguiser.agent.disguiser.agent.exception.BizException;
-import com.smart.disguiser.agent.disguiser.agent.model.ResultDTO;
-import com.smart.disguiser.agent.disguiser.agent.model.task.DeviceAccountTaskListVO;
-import com.smart.disguiser.agent.disguiser.agent.model.task.web.TaskDTO;
-import com.smart.disguiser.agent.disguiser.agent.model.task.web.TaskQuery;
-import com.smart.disguiser.agent.disguiser.agent.service.account.DeviceAccountTaskService;
+
+import com.zwt.exception.BizException;
+import com.zwt.model.task.DeviceAccountTaskListVO;
+import com.zwt.model.task.web.TaskDTO;
+import com.zwt.model.task.web.TaskQuery;
+import com.zwt.repo.ResultDTO;
+import com.zwt.service.DeviceAccountTaskService;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,7 +31,7 @@ public class DeviceAccountTaskController {
     private DeviceAccountTaskService deviceAccountTaskService;
 
     @GetMapping("/index")
-    public String index(@RequestParam(required = false,defaultValue = "orange")String accountSource, Model model) {
+    public String index(@RequestParam(required = false, defaultValue = "orange") String accountSource, Model model) {
         TaskQuery taskQuery = new TaskQuery();
         taskQuery.setQueryAll(false);
         //TODO: 根据accountSource 区分列表页
@@ -41,8 +42,12 @@ public class DeviceAccountTaskController {
         model.addAttribute("list", result);
         return "ddAccountIndex";
     }
+    @PostMapping("/createTask")
+    public ResultDTO createTask(@Validated @RequestBody TaskQuery taskQuery) {
+        deviceAccountTaskService.createTask(taskQuery);
+        return ResultDTO.success();
+    }
 
-    @MethodLog(value = "列表页查询", httpRequest = true)
     @PostMapping("/query")
     @ResponseBody
     public ResultDTO<List<DeviceAccountTaskListVO>> listTask(@RequestBody TaskQuery taskQuery) {
@@ -79,22 +84,20 @@ public class DeviceAccountTaskController {
         return ResultDTO.success(ListUtils.emptyIfNull(result));
     }
 
-    @MethodLog(value = "列表页数据编辑", httpRequest = true)
     @PostMapping("/update")
     @ResponseBody
     public ResultDTO<DeviceAccountTaskListVO> updateTask(@RequestBody TaskDTO taskDTO) {
-        if(StringUtils.isEmpty(taskDTO.getPhoneNum())){
+        if (StringUtils.isEmpty(taskDTO.getPhoneNum())) {
             throw new BizException("手机号不能为空!");
         }
         DeviceAccountTaskListVO taskListVO = deviceAccountTaskService.updateTask(taskDTO);
         return ResultDTO.success(taskListVO);
     }
 
-    @MethodLog(value = "渠道记录", httpRequest = true)
-    @PostMapping("/updateChannel")
-    @ResponseBody
-    public ResultDTO<DeviceAccountTaskListVO> updateChannel(@RequestBody TaskDTO taskDTO) {
-        DeviceAccountTaskListVO taskListVO = deviceAccountTaskService.updateChannel(taskDTO);
-        return ResultDTO.success(taskListVO);
-    }
+//    @PostMapping("/updateChannel")
+//    @ResponseBody
+//    public ResultDTO<DeviceAccountTaskListVO> updateChannel(@RequestBody TaskDTO taskDTO) {
+//        DeviceAccountTaskListVO taskListVO = deviceAccountTaskService.updateChannel(taskDTO);
+//        return ResultDTO.success(taskListVO);
+//    }
 }
